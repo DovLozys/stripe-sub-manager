@@ -1,19 +1,39 @@
+import {
+  createHttpClient,
+  STRIPE_API_KEY,
+} from '@stripe/ui-extension-sdk/http_client';
+import Stripe from 'stripe';
 import { Box, ContextView, Inline, Link } from '@stripe/ui-extension-sdk/ui';
 import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
 
 import BrandIcon from './brand_icon.svg';
 
-/**
- * This is a view that is rendered in the Stripe dashboard's customer detail page.
- * In stripe-app.json, this view is configured with stripe.dashboard.customer.detail viewport.
- * You can add a new view by running "stripe apps add view" from the CLI.
- */
+const stripe = new Stripe(STRIPE_API_KEY, {
+  httpClient: createHttpClient(),
+  apiVersion: '2022-11-15',
+});
+
 const App = ({ userContext, environment }: ExtensionContextValue) => {
+  const retrieveCurrentCustomer = async (customerId: string) => {
+    try {
+      const customer = await stripe.customers.retrieve(customerId);
+      // const subs = await stripe.subscriptions.retrieve() ?
+
+      console.log(customer);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (environment.objectContext) {
+    retrieveCurrentCustomer(environment.objectContext.id);
+  }
+
   return (
     <ContextView
       title="Henlo world"
-      brandColor="#F6F8FA" // replace this with your brand color
-      brandIcon={BrandIcon} // replace this with your brand icon
+      brandColor="#F6F8FA"
+      brandIcon={BrandIcon}
       externalLink={{
         label: 'View docs',
         href: 'https://stripe.com/docs/stripe-apps',

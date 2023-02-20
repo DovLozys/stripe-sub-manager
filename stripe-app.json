@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "name": "Henlo Subs",
   "icon": "",
-  "permissions": [],
+  "permissions": [
+    {
+      "permission": "customer_read",
+      "purpose": "get subscriptions and metadata"
+    }
+  ],
   "app_backend": {
     "webhooks": []
   },
@@ -21,6 +26,5 @@
       "purpose": ""
     }
   },
-  "post_install_action": null,
-  "constants": null
+  "post_install_action": null
 }
