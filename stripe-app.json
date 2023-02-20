@@ -1,12 +1,16 @@
 {
   "id": "com.example.henloworld",
   "version": "0.0.1",
-  "name": "Henlo Subs",
+  "name": "Digest",
   "icon": "",
   "permissions": [
     {
       "permission": "customer_read",
       "purpose": "get subscriptions and metadata"
+    },
+    {
+      "permission": "subscription_read",
+      "purpose": "get subs"
     }
   ],
   "app_backend": {
@@ -26,5 +30,6 @@
       "purpose": ""
     }
   },
-  "post_install_action": null
+  "post_install_action": null,
+  "constants": null
 }

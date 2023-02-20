@@ -1,9 +1,10 @@
+import { useState } from 'react';
+import Stripe from 'stripe';
 import {
   createHttpClient,
   STRIPE_API_KEY,
 } from '@stripe/ui-extension-sdk/http_client';
-import Stripe from 'stripe';
-import { Box, ContextView, Inline, Link } from '@stripe/ui-extension-sdk/ui';
+import { Box, Button, ContextView, Link } from '@stripe/ui-extension-sdk/ui';
 import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
 
 import BrandIcon from './brand_icon.svg';
@@ -13,44 +14,55 @@ const stripe = new Stripe(STRIPE_API_KEY, {
   apiVersion: '2022-11-15',
 });
 
-const App = ({ userContext, environment }: ExtensionContextValue) => {
-  const retrieveCurrentCustomer = async (customerId: string) => {
-    try {
-      const customer = await stripe.customers.retrieve(customerId);
-      // const subs = await stripe.subscriptions.retrieve() ?
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
-      console.log(customer);
+const App = ({ userContext, environment }: ExtensionContextValue) => {
+  const [customer, setCustomer] = useState<
+    Stripe.Customer | Stripe.DeletedCustomer
+  >();
+  const [subs, setSubs] = useState<Stripe.Subscription[]>([]);
+
+  const retrieveCurrentCustomer = async () => {
+    try {
+      const cust = await stripe.customers.retrieve(
+        environment.objectContext.id
+      );
+      const subs = await stripe.subscriptions.list({
+        customer: environment.objectContext.id,
+      });
+
+      setCustomer(cust);
+      setSubs(subs.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  if (environment.objectContext) {
-    retrieveCurrentCustomer(environment.objectContext.id);
-  }
-
   return (
     <ContextView
-      title="Henlo world"
-      brandColor="#F6F8FA"
+      title="Customer subs"
+      brandColor="#faae40"
       brandIcon={BrandIcon}
-      externalLink={{
-        label: 'View docs',
-        href: 'https://stripe.com/docs/stripe-apps',
-      }}
     >
       <Box css={{ height: 'fill', stack: 'y', distribute: 'space-between' }}>
-        <Box
-          css={{
-            background: 'container',
-            borderRadius: 'medium',
-            marginTop: 'small',
-            padding: 'large',
-          }}
-        >
-          Edit{' '}
-          <Inline css={{ fontFamily: 'monospace' }}>src/views/App.tsx</Inline>{' '}
-          and save to reload this view.
+        <Button type="primary" onPress={retrieveCurrentCustomer}>
+          Get subscriptions
+        </Button>
+
+        <Box>
+          {customer ? customer.name : ''}
+
+          {subs.map((sub) => {
+            return (
+              <Box key={sub.id}>
+                {sub.items.data[0].plan.nickname}
+                {formatter.format(sub.plan.amount / 100)}
+              </Box>
+            );
+          })}
         </Box>
 
         <Box css={{ color: 'secondary' }}>
