@@ -27,15 +27,20 @@ const App = ({ userContext, environment }: ExtensionContextValue) => {
 
   const retrieveCurrentCustomer = async () => {
     try {
+      if (!environment.objectContext) throw new Error('missing objectContext');
+
       const cust = await stripe.customers.retrieve(
-        environment.objectContext.id
+        environment.objectContext.id,
+        {
+          expand: ['subscriptions'],
+        }
       );
-      const subs = await stripe.subscriptions.list({
-        customer: environment.objectContext.id,
-      });
 
       setCustomer(cust);
-      setSubs(subs.data);
+      setSubs(cust.subscriptions.data);
+      // console.log(
+      //   (cust.subscriptions as Stripe.ApiList<Stripe.Subscription>).data
+      // );
     } catch (error) {
       console.error(error);
     }
