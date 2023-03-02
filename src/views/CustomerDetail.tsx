@@ -19,7 +19,7 @@ const formatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-const App = ({ userContext, environment }: ExtensionContextValue) => {
+const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => {
   const [customer, setCustomer] = useState<
     Stripe.Customer | Stripe.DeletedCustomer
   >();
@@ -106,4 +106,4 @@ const App = ({ userContext, environment }: ExtensionContextValue) => {
   );
 };
 
-export default App;
+export default CustomerDetail;

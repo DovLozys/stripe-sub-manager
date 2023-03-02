@@ -20,7 +20,7 @@
     "views": [
       {
         "viewport": "stripe.dashboard.customer.detail",
-        "component": "App"
+        "component": "CustomerDetail"
       },
       {
         "viewport": "stripe.dashboard.home.overview",

@@ -12,7 +12,7 @@ const notes: Note[] = [
         id: 2,
         staffId: "acct_",
         customerId: "cus_M9DfDw7rWL4mMV", 
-        message: "call scheduled fo 2pm",
+        message: "call scheduled for 2pm",
         createdAt: new Date(),
     },
 ];
