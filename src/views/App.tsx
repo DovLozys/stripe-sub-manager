@@ -46,11 +46,11 @@ const App = ({ userContext, environment }: ExtensionContextValue) => {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      await retrieveCurrentCustomer();
-    })();
-  }, []);
+//  useEffect(() => {
+//    (async () => {
+//      await retrieveCurrentCustomer();
+//    })();
+//  }, []);
 
   return (
     <ContextView
