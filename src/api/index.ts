@@ -67,7 +67,7 @@ export async function getNotesForCustomer({
     const response: APIResponse = {
         error: false,
         data: {
-            notesForCustomer
+            notes: notesForCustomer
         }
     };
 
