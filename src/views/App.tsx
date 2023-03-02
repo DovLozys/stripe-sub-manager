@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Stripe from 'stripe';
 import {
   createHttpClient,
@@ -45,6 +45,12 @@ const App = ({ userContext, environment }: ExtensionContextValue) => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await retrieveCurrentCustomer();
+    })();
+  }, []);
 
   return (
     <ContextView
