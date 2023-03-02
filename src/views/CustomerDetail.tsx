@@ -4,10 +4,13 @@ import {
   createHttpClient,
   STRIPE_API_KEY,
 } from '@stripe/ui-extension-sdk/http_client';
-import { Box, Button, ContextView, Link } from '@stripe/ui-extension-sdk/ui';
+import { Box, Button, ContextView, Inline, Link } from '@stripe/ui-extension-sdk/ui';
 import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
 
 import BrandIcon from './brand_icon.svg';
+import { getNotesForCustomer } from '../api';
+import { APIResponse, Note } from '../types';
+import Notes from '../components/Notes';
 
 const stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient(),
@@ -20,10 +23,29 @@ const formatter = new Intl.NumberFormat('en-US', {
 });
 
 const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => {
+  const customerId = environment?.objectContext?.id;
+
+  const staffId = userContext?.account.id as string;
+  const staffName = userContext?.account.name as string;
+
+  const [notes, setNotes] = useState<Note[] | null>(null);
   const [customer, setCustomer] = useState<
     Stripe.Customer | Stripe.DeletedCustomer
   >();
   const [subs, setSubs] = useState<Stripe.Subscription[]>([]);
+
+  const getNotes = () => {
+    if (!customerId) {
+      return;
+    }
+
+    getNotesForCustomer({ customerId }).then((res: APIResponse) => {
+      if (!res.error) {
+      console.log(res.data);
+        setNotes(res.data.notes);
+      }
+    }); 
+  }
 
   const retrieveCurrentCustomer = async () => {
     try {
@@ -46,18 +68,39 @@ const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => 
     }
   };
 
+  useEffect(() => {
+    getNotes();
+  }, [customerId]);
 //  useEffect(() => {
 //    (async () => {
 //      await retrieveCurrentCustomer();
 //    })();
 //  }, []);
+  console.log(notes);
 
   return (
     <ContextView
       title="Customer subs"
+      description={customerId}
       brandColor="#faae40"
       brandIcon={BrandIcon}
     >
+      <Box>
+        <Box>
+          <Inline
+            css={{
+              font: "heading",
+              color: "primary",
+              fontWeight: "semibold",
+              paddingY: "medium"
+            }}
+          >
+            View all notes
+          </Inline>
+
+          <Notes notes={notes} />
+        </Box>
+      </Box>
       <Box css={{ height: 'fill', stack: 'y', distribute: 'space-between' }}>
         <Button type="primary" onPress={retrieveCurrentCustomer}>
           Get subscriptions
