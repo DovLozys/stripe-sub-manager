@@ -1,16 +1,27 @@
 import { useState, useEffect } from 'react';
 import Stripe from 'stripe';
+import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
 import {
   createHttpClient,
   STRIPE_API_KEY,
 } from '@stripe/ui-extension-sdk/http_client';
-import { Box, Button, ContextView, Inline, Link } from '@stripe/ui-extension-sdk/ui';
-import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
+import {
+  Banner,
+  Box,
+  Button,
+  ContextView,
+  Icon,
+  Inline,
+  Link,
+} from '@stripe/ui-extension-sdk/ui';
 
-import BrandIcon from './brand_icon.svg';
 import { getNotesForCustomer } from '../api';
 import { APIResponse, Note } from '../types';
+
+import AddNoteView from '../components/AddNoteView';
 import Notes from '../components/Notes';
+
+import BrandIcon from './brand_icon.svg';
 
 const stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient(),
@@ -22,12 +33,18 @@ const formatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => {
+const CustomerDetail = ({
+  userContext,
+  environment,
+}: ExtensionContextValue) => {
   const customerId = environment?.objectContext?.id;
 
-  const staffId = userContext?.account.id as string;
-  const staffName = userContext?.account.name as string;
+  const staffId = userContext?.account.id || '';
+  const staffName = userContext?.account.name || '';
 
+  const [showAddNoteView, setShowAddNoteView] = useState<boolean>(false);
+  const [showAddNoteSuccessMessage, setShowAddNoteSuccessMessage] =
+    useState<boolean>(false);
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [customer, setCustomer] = useState<
     Stripe.Customer | Stripe.DeletedCustomer
@@ -41,11 +58,11 @@ const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => 
 
     getNotesForCustomer({ customerId }).then((res: APIResponse) => {
       if (!res.error) {
-      console.log(res.data);
+        console.log(res.data);
         setNotes(res.data.notes);
       }
-    }); 
-  }
+    });
+  };
 
   const retrieveCurrentCustomer = async () => {
     try {
@@ -71,12 +88,6 @@ const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => 
   useEffect(() => {
     getNotes();
   }, [customerId]);
-//  useEffect(() => {
-//    (async () => {
-//      await retrieveCurrentCustomer();
-//    })();
-//  }, []);
-  console.log(notes);
 
   return (
     <ContextView
@@ -84,15 +95,52 @@ const CustomerDetail = ({ userContext, environment }: ExtensionContextValue) => 
       description={customerId}
       brandColor="#faae40"
       brandIcon={BrandIcon}
+      actions={
+        <Button
+          type="primary"
+          css={{ width: 'fill', alignX: 'center' }}
+          onPress={() => {
+            setShowAddNoteView(true);
+          }}
+        >
+          <Box css={{ stack: 'x', gap: 'small', alignY: 'center' }}>
+            <Icon name="addCircle" size="xsmall" />
+            <Inline>Add note</Inline>
+          </Box>
+        </Button>
+      }
     >
-      <Box>
-        <Box>
+      {showAddNoteSuccessMessage && (
+        <Box css={{ marginBottom: 'small' }}>
+          <Banner
+            type="default"
+            onDismiss={() => setShowAddNoteSuccessMessage(false)}
+            title="New note added"
+          />
+        </Box>
+      )}
+      <AddNoteView
+        isOpen={showAddNoteView}
+        customerId={customerId as string}
+        staffId={staffId}
+        onSuccessAction={() => {
+          setShowAddNoteView(false);
+          setShowAddNoteSuccessMessage(true);
+          getNotes();
+        }}
+        onCancelAction={() => {
+          setShowAddNoteView(false);
+        }}
+      />
+
+      <Box css={{ stack: 'y' }}>
+        <Box css={{}}>
           <Inline
             css={{
-              font: "heading",
-              color: "primary",
-              fontWeight: "semibold",
-              paddingY: "medium"
+              font: 'heading',
+              color: 'primary',
+              fontWeight: 'semibold',
+              paddingY: 'medium',
             }}
           >
             View all notes
