@@ -12,7 +12,6 @@ import {
   ContextView,
   Icon,
   Inline,
-  Link,
 } from '@stripe/ui-extension-sdk/ui';
 
 import { getNotesForCustomer } from '../api';
@@ -143,20 +142,22 @@ const CustomerDetail = ({
               paddingY: 'medium',
             }}
           >
-            View all notes
+            View all notes {customer ? `for ${customer.name}` : ''}
           </Inline>
 
           <Notes notes={notes} />
         </Box>
-      </Box>
-      <Box css={{ height: 'fill', stack: 'y', distribute: 'space-between' }}>
-        <Button type="primary" onPress={retrieveCurrentCustomer}>
-          Get subscriptions
+        <Button
+          type="primary"
+          css={{ width: 'fill', alignX: 'center' }}
+          onPress={retrieveCurrentCustomer}
+        >
+          <Box css={{ stack: 'x', gap: 'small', alignY: 'center' }}>
+            <Icon name="subscription" size="xsmall" />
+            Get subscriptions
+          </Box>
         </Button>
-
         <Box>
-          {customer ? customer.name : ''}
-
           {subs.map((sub) => {
             return (
               <Box key={sub.id}>
@@ -165,32 +166,6 @@ const CustomerDetail = ({
               </Box>
             );
           })}
-        </Box>
-
-        <Box css={{ color: 'secondary' }}>
-          <Box css={{ marginBottom: 'medium' }}>
-            Learn more about views, authentication, and accessing data in{' '}
-            <Link
-              href="https://stripe.com/docs/stripe-apps"
-              target="blank"
-              type="secondary"
-            >
-              Stripe Apps docs
-            </Link>
-            .
-          </Box>
-
-          <Box css={{ marginBottom: 'medium' }}>
-            Questions? Get help with your app from the{' '}
-            <Link
-              href="https://github.com/stripe/stripe-apps/wiki/Developer-Support"
-              target="blank"
-              type="secondary"
-            >
-              Stripe Apps wiki
-            </Link>
-            .
-          </Box>
         </Box>
       </Box>
     </ContextView>
