@@ -161,8 +161,10 @@ const CustomerDetail = ({
           {subs.map((sub) => {
             return (
               <Box key={sub.id}>
-                {sub.items.data[0].plan.nickname}
-                {formatter.format(sub.plan.amount / 100)}
+                <Box>
+                  {formatter.format(sub.plan.amount / 100) +
+                    ` ${sub.plan.currency} per ${sub.plan.interval}`}
+                </Box>
               </Box>
             );
           })}
