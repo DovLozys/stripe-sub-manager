@@ -1,7 +1,7 @@
 {
-  "name": "com.example.henloworld",
+  "name": "stripe-sub-manager",
   "version": "0.0.1",
-  "description": "Henlo Subs",
+  "description": "Stripe sub manager",
   "private": true,
   "license": "~~proprietary~~",
   "dependencies": {
