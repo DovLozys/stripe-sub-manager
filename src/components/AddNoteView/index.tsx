@@ -1,6 +1,6 @@
-import { Button, FocusView, TextArea } from '@stripe/ui-extension-sdk/ui';
-import { FunctionComponent, useState } from 'react';
-import { addNote } from '../../api';
+import { Button, FocusView, TextArea } from "@stripe/ui-extension-sdk/ui";
+import { FunctionComponent, useState } from "react";
+import { addNote } from "../../api";
 
 interface AddNoteViewProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ const AddNoteView: FunctionComponent<AddNoteViewProps> = ({
   onSuccessAction,
   onCancelAction,
 }: AddNoteViewProps) => {
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
 
   return (
     <FocusView
@@ -31,7 +31,7 @@ const AddNoteView: FunctionComponent<AddNoteViewProps> = ({
           type="primary"
           onPress={async () => {
             await addNote({ customerId, message, staffId });
-            setMessage('');
+            setMessage("");
             onSuccessAction();
           }}
         >

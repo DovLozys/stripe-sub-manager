@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import Stripe from 'stripe';
-import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
+import { useState, useEffect } from "react";
+import Stripe from "stripe";
+import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
 import {
   createHttpClient,
   STRIPE_API_KEY,
-} from '@stripe/ui-extension-sdk/http_client';
+} from "@stripe/ui-extension-sdk/http_client";
 import {
   Banner,
   Box,
@@ -12,24 +12,24 @@ import {
   ContextView,
   Icon,
   Inline,
-} from '@stripe/ui-extension-sdk/ui';
+} from "@stripe/ui-extension-sdk/ui";
 
-import { getNotesForCustomer } from '../api';
-import { APIResponse, Note } from '../types';
+import { getNotesForCustomer } from "../api";
+import { APIResponse, Note } from "../types";
 
-import AddNoteView from '../components/AddNoteView';
-import Notes from '../components/Notes';
+import AddNoteView from "../components/AddNoteView";
+import Notes from "../components/Notes";
 
-import BrandIcon from './brand_icon.svg';
+import BrandIcon from "./brand_icon.svg";
 
 const stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient(),
-  apiVersion: '2022-11-15',
+  apiVersion: "2022-11-15",
 });
 
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
 });
 
 const CustomerDetail = ({
@@ -38,8 +38,8 @@ const CustomerDetail = ({
 }: ExtensionContextValue) => {
   const customerId = environment?.objectContext?.id;
 
-  const staffId = userContext?.account.id || '';
-  const staffName = userContext?.account.name || '';
+  const staffId = userContext?.account.id || "";
+  const staffName = userContext?.account.name || "";
 
   const [showAddNoteView, setShowAddNoteView] = useState<boolean>(false);
   const [showAddNoteSuccessMessage, setShowAddNoteSuccessMessage] =
@@ -65,12 +65,12 @@ const CustomerDetail = ({
 
   const retrieveCurrentCustomer = async () => {
     try {
-      if (!environment.objectContext) throw new Error('missing objectContext');
+      if (!environment.objectContext) throw new Error("missing objectContext");
 
       const cust = await stripe.customers.retrieve(
         environment.objectContext.id,
         {
-          expand: ['subscriptions'],
+          expand: ["subscriptions"],
         }
       );
 
@@ -97,12 +97,12 @@ const CustomerDetail = ({
       actions={
         <Button
           type="primary"
-          css={{ width: 'fill', alignX: 'center' }}
+          css={{ width: "fill", alignX: "center" }}
           onPress={() => {
             setShowAddNoteView(true);
           }}
         >
-          <Box css={{ stack: 'x', gap: 'small', alignY: 'center' }}>
+          <Box css={{ stack: "x", gap: "small", alignY: "center" }}>
             <Icon name="addCircle" size="xsmall" />
             <Inline>Add note</Inline>
           </Box>
@@ -110,7 +110,7 @@ const CustomerDetail = ({
       }
     >
       {showAddNoteSuccessMessage && (
-        <Box css={{ marginBottom: 'small' }}>
+        <Box css={{ marginBottom: "small" }}>
           <Banner
             type="default"
             onDismiss={() => setShowAddNoteSuccessMessage(false)}
@@ -132,27 +132,27 @@ const CustomerDetail = ({
         }}
       />
 
-      <Box css={{ stack: 'y' }}>
+      <Box css={{ stack: "y" }}>
         <Box css={{}}>
           <Inline
             css={{
-              font: 'heading',
-              color: 'primary',
-              fontWeight: 'semibold',
-              paddingY: 'medium',
+              font: "heading",
+              color: "primary",
+              fontWeight: "semibold",
+              paddingY: "medium",
             }}
           >
-            View all notes {customer ? `for ${customer.name}` : ''}
+            View all notes {customer ? `for ${customer.name}` : ""}
           </Inline>
 
           <Notes notes={notes} />
         </Box>
         <Button
           type="primary"
-          css={{ width: 'fill', alignX: 'center' }}
+          css={{ width: "fill", alignX: "center" }}
           onPress={retrieveCurrentCustomer}
         >
-          <Box css={{ stack: 'x', gap: 'small', alignY: 'center' }}>
+          <Box css={{ stack: "x", gap: "small", alignY: "center" }}>
             <Icon name="subscription" size="xsmall" />
             Get subscriptions
           </Box>
