@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Stripe from "stripe";
 import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
 import {
@@ -6,19 +6,17 @@ import {
   STRIPE_API_KEY,
 } from "@stripe/ui-extension-sdk/http_client";
 import {
+  Accordion,
+  AccordionItem,
   Banner,
   Box,
   Button,
   ContextView,
+  List,
+  ListItem,
   Icon,
   Inline,
 } from "@stripe/ui-extension-sdk/ui";
-
-import { getNotesForCustomer } from "../api";
-import { APIResponse, Note } from "../types";
-
-import AddNoteView from "../components/AddNoteView";
-import Notes from "../components/Notes";
 
 import BrandIcon from "./brand_icon.svg";
 
@@ -36,140 +34,64 @@ const CustomerDetail = ({
   userContext,
   environment,
 }: ExtensionContextValue) => {
-  const customerId = environment?.objectContext?.id;
+  const [subSched, setSubSched] = useState<Stripe.SubscriptionSchedule>();
+  // const customerId = environment?.objectContext?.id;
 
-  const staffId = userContext?.account.id || "";
-  const staffName = userContext?.account.name || "";
+  const getSubSchedule = async () => {
+    const subscriptionSchedule = await stripe.subscriptionSchedules.retrieve(
+      "sub_sched_1MtpSTC9XCoseyDYCmwTMKWW"
+    );
 
-  const [showAddNoteView, setShowAddNoteView] = useState<boolean>(false);
-  const [showAddNoteSuccessMessage, setShowAddNoteSuccessMessage] =
-    useState<boolean>(false);
-  const [notes, setNotes] = useState<Note[] | null>(null);
-  const [customer, setCustomer] = useState<
-    Stripe.Customer | Stripe.DeletedCustomer
-  >();
-  const [subs, setSubs] = useState<Stripe.Subscription[]>([]);
+    setSubSched(subscriptionSchedule);
 
-  const getNotes = () => {
-    if (!customerId) {
-      return;
-    }
+    if (!subscriptionSchedule.metadata) return;
 
-    getNotesForCustomer({ customerId }).then((res: APIResponse) => {
-      if (!res.error) {
-        console.log(res.data);
-        setNotes(res.data.notes);
-      }
-    });
-  };
-
-  const retrieveCurrentCustomer = async () => {
-    try {
-      if (!environment.objectContext) throw new Error("missing objectContext");
-
-      const cust = await stripe.customers.retrieve(
-        environment.objectContext.id,
-        {
-          expand: ["subscriptions"],
-        }
-      );
-
-      setCustomer(cust);
-      setSubs(cust.subscriptions.data);
-      // console.log(
-      //   (cust.subscriptions as Stripe.ApiList<Stripe.Subscription>).data
-      // );
-    } catch (error) {
-      console.error(error);
-    }
+    console.log("Sub sched: ", subscriptionSchedule.metadata.subscription_type);
   };
 
   useEffect(() => {
-    getNotes();
-  }, [customerId]);
+    getSubSchedule();
+  }, []);
 
+  // accordion with phases[i][items][i][metadata][end_customer_name] as title
   return (
     <ContextView
-      title="Customer subs"
-      description={customerId}
-      brandColor="#faae40"
+      title="Subscription Schedule"
       brandIcon={BrandIcon}
-      actions={
-        <Button
-          type="primary"
-          css={{ width: "fill", alignX: "center" }}
-          onPress={() => {
-            setShowAddNoteView(true);
-          }}
-        >
-          <Box css={{ stack: "x", gap: "small", alignY: "center" }}>
-            <Icon name="addCircle" size="xsmall" />
-            <Inline>Add note</Inline>
-          </Box>
-        </Button>
-      }
+      brandColor="orange"
     >
-      {showAddNoteSuccessMessage && (
-        <Box css={{ marginBottom: "small" }}>
-          <Banner
-            type="default"
-            onDismiss={() => setShowAddNoteSuccessMessage(false)}
-            title="New note added"
-          />
-        </Box>
-      )}
-      <AddNoteView
-        isOpen={showAddNoteView}
-        customerId={customerId as string}
-        staffId={staffId}
-        onSuccessAction={() => {
-          setShowAddNoteView(false);
-          setShowAddNoteSuccessMessage(true);
-          getNotes();
-        }}
-        onCancelAction={() => {
-          setShowAddNoteView(false);
-        }}
-      />
-
-      <Box css={{ stack: "y" }}>
-        <Box css={{}}>
-          <Inline
-            css={{
-              font: "heading",
-              color: "primary",
-              fontWeight: "semibold",
-              paddingY: "medium",
-            }}
-          >
-            View all notes {customer ? `for ${customer.name}` : ""}
-          </Inline>
-
-          <Notes notes={notes} />
-        </Box>
-        <Button
-          type="primary"
-          css={{ width: "fill", alignX: "center" }}
-          onPress={retrieveCurrentCustomer}
-        >
-          <Box css={{ stack: "x", gap: "small", alignY: "center" }}>
-            <Icon name="subscription" size="xsmall" />
-            Get subscriptions
-          </Box>
-        </Button>
-        <Box>
-          {subs.map((sub) => {
+      <Accordion>
+        <AccordionItem title={subSched?.metadata?.subscription_type}>
+          {subSched?.phases.map((phase, i) => {
             return (
-              <Box key={sub.id}>
-                <Box>
-                  {formatter.format(sub.plan.amount / 100) +
-                    ` ${sub.plan.currency} per ${sub.plan.interval}`}
-                </Box>
-              </Box>
+              <AccordionItem title={`Phase ${i}`} key={crypto.randomUUID()}>
+                {phase.items.map((item, i) => {
+                  return (
+                    <AccordionItem
+                      title={item.metadata?.end_customer_name}
+                      subtitle={`Item ${i}`}
+                      key={crypto.randomUUID()}
+                    >
+                      <Box>Metadata:</Box>
+                      <List>
+                        {Object.entries(item.metadata).map(([key, value]) => {
+                          return (
+                            <ListItem
+                              title={<Box>{key}</Box>}
+                              secondaryTitle={<Box>{value}</Box>}
+                              key={key}
+                            ></ListItem>
+                          );
+                        })}
+                      </List>
+                    </AccordionItem>
+                  );
+                })}
+              </AccordionItem>
             );
           })}
-        </Box>
-      </Box>
+        </AccordionItem>
+      </Accordion>
     </ContextView>
   );
 };

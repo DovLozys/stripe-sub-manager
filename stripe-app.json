@@ -1,7 +1,7 @@
 {
   "id": "stripe-sub-manager",
   "version": "0.0.1",
-  "name": "Digest",
+  "name": "stripe-sub-manager",
   "icon": "",
   "permissions": [
     {
