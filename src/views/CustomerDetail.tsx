@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+
 import Stripe from "stripe";
-import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
 import {
   createHttpClient,
   STRIPE_API_KEY,
@@ -8,14 +8,10 @@ import {
 import {
   Accordion,
   AccordionItem,
-  Banner,
   Box,
-  Button,
   ContextView,
   List,
   ListItem,
-  Icon,
-  Inline,
 } from "@stripe/ui-extension-sdk/ui";
 
 import BrandIcon from "./brand_icon.svg";
@@ -30,12 +26,8 @@ const formatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-const CustomerDetail = ({
-  userContext,
-  environment,
-}: ExtensionContextValue) => {
+const CustomerDetail = () => {
   const [subSched, setSubSched] = useState<Stripe.SubscriptionSchedule>();
-  // const customerId = environment?.objectContext?.id;
 
   const getSubSchedule = async () => {
     const subscriptionSchedule = await stripe.subscriptionSchedules.retrieve(
@@ -53,7 +45,6 @@ const CustomerDetail = ({
     getSubSchedule();
   }, []);
 
-  // accordion with phases[i][items][i][metadata][end_customer_name] as title
   return (
     <ContextView
       title="Subscription Schedule"
