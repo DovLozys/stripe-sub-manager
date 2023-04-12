@@ -31,14 +31,11 @@ const CustomerDetail = () => {
 
   const getSubSchedule = async () => {
     const subscriptionSchedule = await stripe.subscriptionSchedules.retrieve(
-      "sub_sched_1MtpSTC9XCoseyDYCmwTMKWW"
+      "sub_sched_1MtpSTC9XCoseyDYCmwTMKWW",
+      { expand: ["phases.items.price.product"] }
     );
 
     setSubSched(subscriptionSchedule);
-
-    if (!subscriptionSchedule.metadata) return;
-
-    console.log("Sub sched: ", subscriptionSchedule.metadata.subscription_type);
   };
 
   useEffect(() => {
@@ -59,8 +56,12 @@ const CustomerDetail = () => {
                 {phase.items.map((item, i) => {
                   return (
                     <AccordionItem
-                      title={item.metadata?.end_customer_name}
-                      subtitle={`Item ${i}`}
+                      title={item.price.product.name}
+                      subtitle={`${
+                        item.price.product.description
+                      } at ${formatter.format(item.price.unit_amount / 100)}/${
+                        item.price.recurring.interval
+                      }`}
                       key={crypto.randomUUID()}
                     >
                       <Box>Metadata:</Box>
