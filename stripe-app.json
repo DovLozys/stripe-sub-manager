@@ -11,6 +11,10 @@
     {
       "permission": "subscription_read",
       "purpose": "get subs"
+    },
+    {
+      "permission": "product_read",
+      "purpose": "read prod"
     }
   ],
   "app_backend": {
@@ -27,13 +31,10 @@
         "component": "HomeOverview"
       }
     ],
-    "actions": [],
     "content_security_policy": {
       "connect-src": null,
       "image-src": null,
       "purpose": ""
     }
-  },
-  "post_install_action": null,
-  "constants": null
+  }
 }
