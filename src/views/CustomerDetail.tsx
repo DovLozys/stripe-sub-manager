@@ -50,6 +50,18 @@ const CustomerDetail = () => {
     >
       <Accordion>
         <AccordionItem title={subSched?.metadata?.subscription_type}>
+          <List>
+            {subSched &&
+              Object.entries(subSched?.metadata).map(([key, value]) => {
+                return (
+                  <ListItem
+                    title={<Box>{key}</Box>}
+                    secondaryTitle={<Box>{value}</Box>}
+                    key={key}
+                  ></ListItem>
+                );
+              })}
+          </List>
           {subSched?.phases.map((phase, i) => {
             return (
               <AccordionItem title={`Phase ${i}`} key={crypto.randomUUID()}>
