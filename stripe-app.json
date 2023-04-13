@@ -29,6 +29,10 @@
       {
         "viewport": "stripe.dashboard.home.overview",
         "component": "HomeOverview"
+      },
+      {
+        "viewport": "stripe.dashboard.subscription.detail",
+        "component": "SubscriptionDetail"
       }
     ],
     "content_security_policy": {
