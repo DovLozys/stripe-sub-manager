@@ -5,7 +5,16 @@ import {
   createHttpClient,
   STRIPE_API_KEY,
 } from "@stripe/ui-extension-sdk/http_client";
-import { Box, ContextView, Inline } from "@stripe/ui-extension-sdk/ui";
+import {
+  Box,
+  ContextView,
+  Inline,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@stripe/ui-extension-sdk/ui";
 
 const stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient(),
@@ -40,6 +49,20 @@ const SubscriptionDetail = ({
         href: "https://stripe.com/docs/stripe-apps",
       }}
     >
+      <Tabs fitted>
+        <TabList>
+          <Tab>1</Tab>
+          <Tab>2</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Box css={{ padding: "medium" }}>1</Box>
+          </TabPanel>
+          <TabPanel>
+            <Box css={{ padding: "medium" }}>2</Box>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
       <Box
         css={{
           background: "container",
