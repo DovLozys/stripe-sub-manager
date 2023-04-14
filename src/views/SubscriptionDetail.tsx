@@ -9,6 +9,8 @@ import {
   Box,
   ContextView,
   Inline,
+  List,
+  ListItem,
   Tab,
   TabList,
   TabPanel,
@@ -26,59 +28,66 @@ const SubscriptionDetail = ({
   environment,
 }: ExtensionContextValue) => {
   const [subscription, setSubscription] = useState<Stripe.Subscription>();
+  const [subscriptionSchedule, setSubSched] =
+    useState<Stripe.SubscriptionSchedule>();
 
   useEffect(() => {
     const getSub = async () => {
       const id = environment.objectContext?.id;
       if (!id) return;
-      const sub = await stripe.subscriptions.retrieve(id, {
-        expand: ["schedule.phases.items.price"],
-      });
+      const sub = await stripe.subscriptions.retrieve(id);
       setSubscription(sub);
     };
     getSub();
   }, []);
 
-  console.log("Subscription: ", subscription);
+  useEffect(() => {
+    const getSubSched = async () => {
+      const id = subscription?.schedule;
+
+      const subSched = await stripe.subscriptionSchedules.retrieve(id);
+      setSubSched(subSched);
+    };
+    getSubSched();
+  }, [subscription]);
+
+  console.log("Subscription Schedule: ", subscriptionSchedule);
+
+  if (!subscription?.schedule) {
+    return <Box>None</Box>;
+  }
 
   return (
-    <ContextView
-      title="Hello world"
-      externalLink={{
-        label: "View docs",
-        href: "https://stripe.com/docs/stripe-apps",
-      }}
-    >
+    <ContextView title="Subscription Scheduler">
       <Tabs fitted>
         <TabList>
-          <Tab>1</Tab>
-          <Tab>2</Tab>
+          <Tab>Contract</Tab>
+          <Tab>Phases/Items</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
-            <Box css={{ padding: "medium" }}>1</Box>
+            <Box css={{ padding: "medium" }}>
+              {subscriptionSchedule &&
+                Object.entries(subscriptionSchedule?.metadata).map(
+                  ([key, value]) => {
+                    return (
+                      <List>
+                        <ListItem
+                          title={<Box>{key}</Box>}
+                          secondaryTitle={<Box>{value}</Box>}
+                          key={key}
+                        ></ListItem>
+                      </List>
+                    );
+                  }
+                )}
+            </Box>
           </TabPanel>
           <TabPanel>
             <Box css={{ padding: "medium" }}>2</Box>
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <Box
-        css={{
-          background: "container",
-          borderRadius: "medium",
-          marginTop: "small",
-          padding: "large",
-          wordBreak: "break-all",
-        }}
-      >
-        Edit{" "}
-        <Inline css={{ fontFamily: "monospace" }}>
-          src/views/SubscriptionDetail.tsx
-        </Inline>{" "}
-        and save to reload this view.
-      </Box>
-      <Box>{JSON.stringify(subscription?.schedule)}</Box>
     </ContextView>
   );
 };
