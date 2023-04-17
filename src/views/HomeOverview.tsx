@@ -32,7 +32,6 @@ const HomeOverview = ({ userContext, environment }: ExtensionContextValue) => {
         >
           View all notes
         </Inline>
-
         <Notes notes={notes} />
       </Box>
     </ContextView>

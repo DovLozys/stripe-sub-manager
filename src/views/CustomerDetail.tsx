@@ -58,7 +58,7 @@ const CustomerDetail = () => {
                     title={<Box>{key}</Box>}
                     secondaryTitle={<Box>{value}</Box>}
                     key={key}
-                  ></ListItem>
+                  />
                 );
               })}
           </List>
@@ -84,7 +84,7 @@ const CustomerDetail = () => {
                               title={<Box>{key}</Box>}
                               secondaryTitle={<Box>{value}</Box>}
                               key={key}
-                            ></ListItem>
+                            />
                           );
                         })}
                       </List>
