@@ -6,9 +6,13 @@ import {
   STRIPE_API_KEY,
 } from "@stripe/ui-extension-sdk/http_client";
 import {
+  AccordionItem,
   Box,
+  Button,
   ContextView,
+  Icon,
   Inline,
+  Link,
   List,
   ListItem,
   Tab,
@@ -16,6 +20,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  TextField,
 } from "@stripe/ui-extension-sdk/ui";
 
 const stripe = new Stripe(STRIPE_API_KEY, {
@@ -23,10 +28,16 @@ const stripe = new Stripe(STRIPE_API_KEY, {
   apiVersion: "2022-11-15",
 });
 
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 const SubscriptionDetail = ({
   userContext,
   environment,
 }: ExtensionContextValue) => {
+  const [editable, setEditable] = useState(false);
   const [subscription, setSubscription] = useState<Stripe.Subscription>();
   const [subscriptionSchedule, setSubSched] =
     useState<Stripe.SubscriptionSchedule>();
@@ -42,14 +53,21 @@ const SubscriptionDetail = ({
   }, []);
 
   useEffect(() => {
+    if (!subscription) return;
     const getSubSched = async () => {
-      const id = subscription?.schedule;
+      const id = subscription.schedule;
 
-      const subSched = await stripe.subscriptionSchedules.retrieve(id);
+      const subSched = await stripe.subscriptionSchedules.retrieve(id, {
+        expand: ["phases.items.price.product"],
+      });
       setSubSched(subSched);
     };
     getSubSched();
   }, [subscription]);
+
+  const toggleEditable = () => {
+    setEditable(!editable);
+  };
 
   console.log("Subscription Schedule: ", subscriptionSchedule);
 
@@ -61,30 +79,107 @@ const SubscriptionDetail = ({
     <ContextView title="Subscription Scheduler">
       <Tabs fitted>
         <TabList>
-          <Tab>Contract</Tab>
-          <Tab>Phases/Items</Tab>
+          <Tab tabKey="contract">Contract</Tab>
+          <Tab tabKey="phases_items">Phases/Items</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
+          <TabPanel tabKey="contract">
             <Box css={{ padding: "medium" }}>
-              {subscriptionSchedule &&
-                Object.entries(subscriptionSchedule?.metadata).map(
-                  ([key, value]) => {
-                    return (
-                      <List>
+              <Inline css={{ padding: "medium" }}>
+                Metadata:{" "}
+                <Button onPress={toggleEditable}>
+                  <Icon name="edit" />
+                  Edit
+                </Button>
+              </Inline>
+              <List>
+                <TextField></TextField>
+                {subscriptionSchedule &&
+                  Object.entries(subscriptionSchedule.metadata).map(
+                    ([key, value]) => {
+                      if (key === "salesforce_order_link") {
+                        return (
+                          <ListItem
+                            title={<Box>{key}</Box>}
+                            secondaryTitle={
+                              <>
+                                {editable ? (
+                                  <TextField defaultValue={value}></TextField>
+                                ) : (
+                                  <Link href={value} target="_blank">
+                                    {value}
+                                  </Link>
+                                )}
+                              </>
+                            }
+                            key={key}
+                          />
+                        );
+                      }
+                      return (
                         <ListItem
                           title={<Box>{key}</Box>}
-                          secondaryTitle={<Box>{value}</Box>}
+                          secondaryTitle={
+                            <>
+                              {editable ? (
+                                <TextField
+                                  type="text"
+                                  defaultValue={value}
+                                ></TextField>
+                              ) : (
+                                <Box>{value}</Box>
+                              )}
+                            </>
+                          }
                           key={key}
                         />
-                      </List>
-                    );
-                  }
-                )}
+                      );
+                    }
+                  )}
+              </List>
             </Box>
           </TabPanel>
-          <TabPanel>
-            <Box css={{ padding: "medium" }}>2</Box>
+          <TabPanel tabKey="phases_items">
+            <Box css={{ padding: "medium" }}>
+              {subscriptionSchedule &&
+                subscriptionSchedule.phases.map((phase, i) => {
+                  return (
+                    <AccordionItem
+                      title={`Phase ${i}`}
+                      key={crypto.randomUUID()}
+                    >
+                      {phase.items.map((item, i) => {
+                        return (
+                          <AccordionItem
+                            title={item.price.product.name}
+                            subtitle={`${
+                              item.price.product.description
+                            } at ${formatter.format(
+                              item.price.unit_amount / 100
+                            )}/${item.price.recurring.interval}`}
+                            key={crypto.randomUUID()}
+                          >
+                            <Box>Metadata:</Box>
+                            <List>
+                              {Object.entries(item.metadata).map(
+                                ([key, value]) => {
+                                  return (
+                                    <ListItem
+                                      title={<Box>{key}</Box>}
+                                      secondaryTitle={<Box>{value}</Box>}
+                                      key={key}
+                                    />
+                                  );
+                                }
+                              )}
+                            </List>
+                          </AccordionItem>
+                        );
+                      })}
+                    </AccordionItem>
+                  );
+                })}
+            </Box>
           </TabPanel>
         </TabPanels>
       </Tabs>
