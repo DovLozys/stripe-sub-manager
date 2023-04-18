@@ -84,6 +84,7 @@ const SubscriptionDetail = ({
           <Tab tabKey="contract">Contract</Tab>
           <Tab tabKey="phases_items">Phases/Items</Tab>
         </TabList>
+
         <TabPanels>
           <TabPanel tabKey="contract">
             <Box
@@ -129,6 +130,7 @@ const SubscriptionDetail = ({
               </List>
             </Box>
           </TabPanel>
+
           <TabPanel tabKey="phases_items">
             <Box css={{ padding: 'medium' }}>
               {subscriptionSchedule &&
