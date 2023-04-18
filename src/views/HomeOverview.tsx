@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Box, ContextView, Inline } from "@stripe/ui-extension-sdk/ui";
-import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
-import { APIResponse, Note } from "../types";
-import * as api from "../api";
-import Notes from "../components/Notes";
+import { useEffect, useState } from 'react';
+import { Box, ContextView, Inline } from '@stripe/ui-extension-sdk/ui';
+import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
+import { APIResponse, Note } from '../types';
+import * as api from '../api';
+import Notes from '../components/Notes';
 
 const HomeOverview = ({ userContext, environment }: ExtensionContextValue) => {
   const staffName = userContext?.account.name as string;
@@ -23,11 +23,11 @@ const HomeOverview = ({ userContext, environment }: ExtensionContextValue) => {
 
   return (
     <ContextView title="Overview">
-      <Box css={{ stack: "y" }}>
+      <Box css={{ stack: 'y' }}>
         <Inline
           css={{
-            color: "primary",
-            fontWeight: "semibold",
+            color: 'primary',
+            fontWeight: 'semibold',
           }}
         >
           View all notes
