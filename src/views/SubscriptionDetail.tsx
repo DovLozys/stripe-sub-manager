@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import Stripe from "stripe";
-import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
+import { useEffect, useState } from 'react';
+import Stripe from 'stripe';
+import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
 import {
   createHttpClient,
   STRIPE_API_KEY,
-} from "@stripe/ui-extension-sdk/http_client";
+} from '@stripe/ui-extension-sdk/http_client';
 import {
   AccordionItem,
   Box,
@@ -20,17 +20,16 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  TextField,
-} from "@stripe/ui-extension-sdk/ui";
+} from '@stripe/ui-extension-sdk/ui';
 
 const stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient(),
-  apiVersion: "2022-11-15",
+  apiVersion: '2022-11-15',
 });
 
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
 });
 
 const SubscriptionDetail = ({
@@ -58,7 +57,7 @@ const SubscriptionDetail = ({
       const id = subscription.schedule;
 
       const subSched = await stripe.subscriptionSchedules.retrieve(id, {
-        expand: ["phases.items.price.product"],
+        expand: ['phases.items.price.product'],
       });
       setSubSched(subSched);
     };
@@ -69,7 +68,7 @@ const SubscriptionDetail = ({
     setEditable(!editable);
   };
 
-  console.log("Subscription Schedule: ", subscriptionSchedule);
+  console.log('Subscription Schedule: ', subscriptionSchedule);
 
   if (!subscription?.schedule) {
     return <Box>None</Box>;
@@ -84,33 +83,26 @@ const SubscriptionDetail = ({
         </TabList>
         <TabPanels>
           <TabPanel tabKey="contract">
-            <Box css={{ padding: "medium" }}>
-              <Inline css={{ padding: "medium" }}>
-                Metadata:{" "}
+            <Box css={{ padding: 'medium' }}>
+              <Inline css={{ padding: 'medium' }}>
+                Metadata:{' '}
                 <Button onPress={toggleEditable}>
                   <Icon name="edit" />
                   Edit
                 </Button>
               </Inline>
               <List>
-                <TextField></TextField>
                 {subscriptionSchedule &&
                   Object.entries(subscriptionSchedule.metadata).map(
                     ([key, value]) => {
-                      if (key === "salesforce_order_link") {
+                      if (key === 'salesforce_order_link') {
                         return (
                           <ListItem
                             title={<Box>{key}</Box>}
                             secondaryTitle={
-                              <>
-                                {editable ? (
-                                  <TextField defaultValue={value}></TextField>
-                                ) : (
-                                  <Link href={value} target="_blank">
-                                    {value}
-                                  </Link>
-                                )}
-                              </>
+                              <Link href={value} target="_blank">
+                                {value}
+                              </Link>
                             }
                             key={key}
                           />
@@ -119,18 +111,7 @@ const SubscriptionDetail = ({
                       return (
                         <ListItem
                           title={<Box>{key}</Box>}
-                          secondaryTitle={
-                            <>
-                              {editable ? (
-                                <TextField
-                                  type="text"
-                                  defaultValue={value}
-                                ></TextField>
-                              ) : (
-                                <Box>{value}</Box>
-                              )}
-                            </>
-                          }
+                          secondaryTitle={<Box>{value}</Box>}
                           key={key}
                         />
                       );
@@ -140,7 +121,7 @@ const SubscriptionDetail = ({
             </Box>
           </TabPanel>
           <TabPanel tabKey="phases_items">
-            <Box css={{ padding: "medium" }}>
+            <Box css={{ padding: 'medium' }}>
               {subscriptionSchedule &&
                 subscriptionSchedule.phases.map((phase, i) => {
                   return (
