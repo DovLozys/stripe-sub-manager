@@ -67,6 +67,10 @@ const SubscriptionDetail = ({
     setEditable(!editable);
   };
 
+  const onEditClick = (e) => {
+    console.log('click event: ', e);
+  };
+
   console.log('Subscription Schedule: ', subscriptionSchedule);
 
   if (!subscription?.schedule) {
@@ -89,7 +93,9 @@ const SubscriptionDetail = ({
             >
               <Box css={{ distribute: 'space-between', stack: 'x' }}>
                 Metadata:
-                <Button onPress={toggleEditable}>
+                <Button
+                  onPress={() => onEditClick(subscriptionSchedule.metadata)}
+                >
                   <Icon name="edit" />
                   Edit
                 </Button>
@@ -129,7 +135,7 @@ const SubscriptionDetail = ({
                 subscriptionSchedule.phases.map((phase, i) => {
                   return (
                     <AccordionItem
-                      title={`Phase ${i} items`}
+                      title={`Phase ${i + 1} items`}
                       key={crypto.randomUUID()}
                     >
                       {phase.items.map((item, i) => {
@@ -158,7 +164,9 @@ const SubscriptionDetail = ({
                                 }}
                               >
                                 Metadata:
-                                <Button onPress={toggleEditable}>
+                                <Button
+                                  onPress={() => onEditClick(item.metadata)}
+                                >
                                   <Icon name="edit" />
                                   Edit
                                 </Button>
