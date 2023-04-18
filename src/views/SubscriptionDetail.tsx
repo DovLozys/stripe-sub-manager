@@ -11,7 +11,6 @@ import {
   Button,
   ContextView,
   Icon,
-  Inline,
   Link,
   List,
   ListItem,
@@ -83,14 +82,18 @@ const SubscriptionDetail = ({
         </TabList>
         <TabPanels>
           <TabPanel tabKey="contract">
-            <Box css={{ padding: 'medium' }}>
-              <Inline css={{ padding: 'medium' }}>
-                Metadata:{' '}
+            <Box
+              css={{
+                padding: 'medium',
+              }}
+            >
+              <Box css={{ distribute: 'space-between', stack: 'x' }}>
+                Metadata:
                 <Button onPress={toggleEditable}>
                   <Icon name="edit" />
                   Edit
                 </Button>
-              </Inline>
+              </Box>
               <List>
                 {subscriptionSchedule &&
                   Object.entries(subscriptionSchedule.metadata).map(
@@ -126,35 +129,55 @@ const SubscriptionDetail = ({
                 subscriptionSchedule.phases.map((phase, i) => {
                   return (
                     <AccordionItem
-                      title={`Phase ${i}`}
+                      title={`Phase ${i} items`}
                       key={crypto.randomUUID()}
                     >
                       {phase.items.map((item, i) => {
                         return (
-                          <AccordionItem
-                            title={item.price.product.name}
-                            subtitle={`${
-                              item.price.product.description
-                            } at ${formatter.format(
-                              item.price.unit_amount / 100
-                            )}/${item.price.recurring.interval}`}
+                          <Box
+                            css={{
+                              background: 'container',
+                              borderRadius: 'medium',
+                              marginTop: 'small',
+                            }}
                             key={crypto.randomUUID()}
                           >
-                            <Box>Metadata:</Box>
-                            <List>
-                              {Object.entries(item.metadata).map(
-                                ([key, value]) => {
-                                  return (
-                                    <ListItem
-                                      title={<Box>{key}</Box>}
-                                      secondaryTitle={<Box>{value}</Box>}
-                                      key={key}
-                                    />
-                                  );
-                                }
-                              )}
-                            </List>
-                          </AccordionItem>
+                            <AccordionItem
+                              title={item.price.product.name}
+                              subtitle={`${
+                                item.price.product.description
+                              } at ${formatter.format(
+                                item.price.unit_amount / 100
+                              )}/${item.price.recurring.interval}`}
+                              key={crypto.randomUUID()}
+                            >
+                              <Box
+                                css={{
+                                  distribute: 'space-between',
+                                  stack: 'x',
+                                }}
+                              >
+                                Metadata:
+                                <Button onPress={toggleEditable}>
+                                  <Icon name="edit" />
+                                  Edit
+                                </Button>
+                              </Box>
+                              <List>
+                                {Object.entries(item.metadata).map(
+                                  ([key, value]) => {
+                                    return (
+                                      <ListItem
+                                        title={<Box>{key}</Box>}
+                                        secondaryTitle={<Box>{value}</Box>}
+                                        key={key}
+                                      />
+                                    );
+                                  }
+                                )}
+                              </List>
+                            </AccordionItem>
+                          </Box>
                         );
                       })}
                     </AccordionItem>
