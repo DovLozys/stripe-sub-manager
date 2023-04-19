@@ -37,6 +37,7 @@ const SubscriptionDetail = ({
   environment,
 }: ExtensionContextValue) => {
   const [showEditMetadataView, setShowEditMetadataView] = useState(false);
+  const [metadata, setMetadata] = useState<Stripe.Metadata>({});
   const [subscription, setSubscription] = useState<Stripe.Subscription>();
   const [subscriptionSchedule, setSubSched] =
     useState<Stripe.SubscriptionSchedule>();
@@ -65,8 +66,18 @@ const SubscriptionDetail = ({
   }, [subscription]);
 
   const onEditClick = (metadata: Stripe.Metadata) => {
-    setShowEditMetadataView(!showEditMetadataView);
+    setMetadata(metadata);
+    setShowEditMetadataView(true);
     console.log('click event: ', metadata);
+  };
+
+  const editMetadata = async (editedMetadata: Stripe.Metadata) => {
+    if (!subscription) return;
+    const id = subscription.schedule as string;
+
+    const subscriptionSchedule = stripe.subscriptionSchedules.update(id, {
+      metadata: editedMetadata,
+    });
   };
 
   console.log('Subscription Schedule: ', subscriptionSchedule);
@@ -79,8 +90,10 @@ const SubscriptionDetail = ({
     <ContextView title="Subscription Scheduler">
       <EditMetadataView
         isOpen={showEditMetadataView}
+        metadata={metadata}
         onSuccessAction={() => setShowEditMetadataView(false)}
         onCancelAction={() => setShowEditMetadataView(false)}
+        editMetadata={editMetadata}
       />
       <Tabs fitted>
         <TabList>
