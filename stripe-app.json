@@ -15,6 +15,10 @@
     {
       "permission": "product_read",
       "purpose": "read prod"
+    },
+    {
+      "permission": "subscription_write",
+      "purpose": "write subs"
     }
   ],
   "app_backend": {
