@@ -20,6 +20,7 @@ import {
   TabPanels,
   Tabs,
 } from '@stripe/ui-extension-sdk/ui';
+import EditMetadataView from '../components/EditMetadataView';
 
 const stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient(),
@@ -35,7 +36,7 @@ const SubscriptionDetail = ({
   userContext,
   environment,
 }: ExtensionContextValue) => {
-  const [editable, setEditable] = useState(false);
+  const [showEditMetadataView, setShowEditMetadataView] = useState(false);
   const [subscription, setSubscription] = useState<Stripe.Subscription>();
   const [subscriptionSchedule, setSubSched] =
     useState<Stripe.SubscriptionSchedule>();
@@ -53,7 +54,7 @@ const SubscriptionDetail = ({
   useEffect(() => {
     if (!subscription) return;
     const getSubSched = async () => {
-      const id = subscription.schedule;
+      const id = subscription.schedule as string;
 
       const subSched = await stripe.subscriptionSchedules.retrieve(id, {
         expand: ['phases.items.price.product'],
@@ -63,12 +64,9 @@ const SubscriptionDetail = ({
     getSubSched();
   }, [subscription]);
 
-  const toggleEditable = () => {
-    setEditable(!editable);
-  };
-
-  const onEditClick = (e) => {
-    console.log('click event: ', e);
+  const onEditClick = (metadata: Stripe.Metadata) => {
+    setShowEditMetadataView(!showEditMetadataView);
+    console.log('click event: ', metadata);
   };
 
   console.log('Subscription Schedule: ', subscriptionSchedule);
@@ -79,6 +77,11 @@ const SubscriptionDetail = ({
 
   return (
     <ContextView title="Subscription Scheduler">
+      <EditMetadataView
+        isOpen={showEditMetadataView}
+        onSuccessAction={() => setShowEditMetadataView(false)}
+        onCancelAction={() => setShowEditMetadataView(false)}
+      />
       <Tabs fitted>
         <TabList>
           <Tab tabKey="contract">Contract</Tab>
@@ -92,7 +95,13 @@ const SubscriptionDetail = ({
                 padding: 'medium',
               }}
             >
-              <Box css={{ distribute: 'space-between', stack: 'x' }}>
+              <Box
+                css={{
+                  distribute: 'space-between',
+                  stack: 'x',
+                  padding: 'small',
+                }}
+              >
                 Metadata:
                 <Button
                   onPress={() => onEditClick(subscriptionSchedule.metadata)}
@@ -163,6 +172,7 @@ const SubscriptionDetail = ({
                                 css={{
                                   distribute: 'space-between',
                                   stack: 'x',
+                                  padding: 'small',
                                 }}
                               >
                                 Metadata:
