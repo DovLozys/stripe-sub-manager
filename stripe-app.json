@@ -19,6 +19,14 @@
     {
       "permission": "subscription_write",
       "purpose": "write subs"
+    },
+    {
+      "permission": "invoice_read",
+      "purpose": "read invoice"
+    },
+    {
+      "permission": "invoice_write",
+      "purpose": "post invoice"
     }
   ],
   "app_backend": {
@@ -37,6 +45,10 @@
       {
         "viewport": "stripe.dashboard.subscription.detail",
         "component": "SubscriptionDetail"
+      },
+      {
+        "viewport": "stripe.dashboard.invoice.detail",
+        "component": "InvoiceDetail"
       }
     ],
     "content_security_policy": {

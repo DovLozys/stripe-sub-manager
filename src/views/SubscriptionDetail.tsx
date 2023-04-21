@@ -75,9 +75,16 @@ const SubscriptionDetail = ({
     if (!subscription) return;
     const id = subscription.schedule as string;
 
-    const subscriptionSchedule = stripe.subscriptionSchedules.update(id, {
-      metadata: editedMetadata,
-    });
+    try {
+      const subscriptionSchedule = await stripe.subscriptionSchedules.update(
+        id,
+        {
+          metadata: editedMetadata,
+        }
+      );
+    } catch (err) {
+      console.log('error: ', err);
+    }
   };
 
   console.log('Subscription Schedule: ', subscriptionSchedule);
